@@ -51,7 +51,7 @@ passport.use(new LocalStrategy(
             });
             }
             else{
-                console.log("Spierdalaj");
+                console.log("EE");
                 flaga = false;
                 return done(null, false);
             }
@@ -71,40 +71,22 @@ app.use(passport.session());
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
-    var body = '<html><body>';
-    var username;
     if (req.user) {
-        username = req.user.username;
-        body += '<p>Jesteś zalogowany jako „' + username + '”</p>';
-        body += '<a href="/logout">Wyloguj</a>'
+        //res.redirect('/mainpage.html');
+        console.log('redirect na index.html')
     } else {
-        body += '<a href="/login">Zaloguj</a>'
+        res.redirect('/login.html');
+        console.log('redirect na login.html')
     }
-    body += '</body></html>'
-    res.send(body);
 });
 
-app.get('/login', function (req, res) {
-    /*
-    var body = '<html><body>'
-    body += '<form action="/login" method="post">';
-    body += '<div><label>Użytkownik:</label>';
-    body += '<input type="text" name="username"/><br/></div>';
-    body += '<div><label>Hasło:</label>';
-    body += '<input type="password" name="password"/></div>';
-    body += '<div><input type="submit" value="Zaloguj"/></div></form>';
-    body += '</body></html>'
-    res.send(body);
-    */
-    res.redirect('/login.html');
-});
 
 app.post('/login',
     passport.authenticate('local', {
         failureRedirect: '/login'
     }),
     function (req, res) {
-        res.redirect('/index.html');
+        res.redirect('/');      
     }
 );
 
@@ -112,7 +94,7 @@ app.get('/logout', function (req, res) {
     console.log('Wylogowanie...')
     flaga = false;
     req.logout();
-    res.redirect('/login');
+    res.redirect('/login.html');
 });
 
 server = http.createServer(app);
