@@ -20,7 +20,7 @@ var history = []; // historia chatu
 var redis = require("redis"),
     client = redis.createClient()
 
-    var userzy = [];
+    var userzy = []; // lista aktualnie zalogowanych userow
 var flaga = false;
 
 // Konfiguracja passport.js
@@ -30,32 +30,32 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(obj, done) {
     done(null, obj);
-}); -
-    passport.use(new LocalStrategy(
-        function(username, password, done) {
-            console.log("Sprawdzam usera " + username);
+});
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        console.log("Sprawdzam usera " + username);
 
-            client.get(username, function(err, reply) {
-                if (reply !== null && reply.toString() === password) {
-                    console.log("user OK");
-                    var d = new Date();
-                    userzy.push(username);
-                    client.rpush("LOG", username + ": " + d, function(err, reply) {
-                        console.log("Zapis w logach");
-                    });
+        client.get(username, function(err, reply) {
+            if (reply !== null && reply.toString() === password) {
+                console.log("user OK");
+                var d = new Date();
+                userzy.push(username);
+                client.rpush("LOG", username + ": " + d, function(err, reply) {
+                    console.log("Zapis w logach");
+                });
 
-                    return done(null, {
-                        username: username,
-                        password: password
-                    });
-                } else {
-                    console.log("EE");
-                    flaga = false;
-                    return done(null, false);
-                }
-            });
-        }
-    ));
+                return done(null, {
+                    username: username,
+                    password: password
+                });
+            } else {
+                console.log("EE");
+                flaga = false;
+                return done(null, false);
+            }
+        });
+    }
+));
 
 app.use(express.cookieParser());
 app.use(express.json());
@@ -87,19 +87,46 @@ app.get('/mainpage', function(req, res) {
     }
 });
 
-app.post('/signup', function(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var confirmation = req.body.confirmation;
 
-    if (password === confirmation) {
-        client.set(username, password, function(err, reply) {
-            console.log(reply.toString());
-        });
-        res.redirect('/login.html');
-    } else {
-        res.redirect('/signup.html');
-    }
+//utworzenie klasy username,password w redisie, przekierowanie na edycje profilu
+app.post('/signup',
+    function(req, res) {
+        var username = req.body.username;
+        var password = req.body.password;
+        var confirmation = req.body.confirmation;
+
+        if (password === confirmation) {
+            client.set(username, password, function(err, reply) {
+                console.log(reply.toString());
+            });
+
+            res.redirect('/login.html');
+        } else {
+            res.redirect('/signup.html');
+        }
+    });
+
+//utworzenie klasy PROFIL (waga,tluszcz itp) w redisie i powiazanie z klasa username,password
+app.post('/edit', function(req, res) {
+    var waga = req.body.waga;
+    var tluszcz = req.body.tluszcz;
+    var bicek = req.body.bicek;
+    var username = req.user.username;
+
+    var data = {
+        waga: waga,
+        tluszcz: tluszcz,
+        bicek: bicek,
+        username: username
+    };
+
+    var jsondata = JSON.stringify(data)
+    console.log(jsondata);
+    client.set(username + "data", jsondata, function(err, reply) {
+        console.log(reply.toString());
+    });
+
+    res.redirect('/')
 });
 
 app.post('/login',
@@ -107,13 +134,30 @@ app.post('/login',
         failureRedirect: '/login'
     }),
     function(req, res) {
-        res.redirect('/');
+        client.keys('*', function(err, keys) {
+            if (err) return console.log(err);
+            if (keys.indexOf(req.user.username + "data") > -1) {
+                res.redirect('/');
+            } else {
+                res.redirect('/edit.html');
+            }
+        })
     }
 );
 
 app.get('/logout', function(req, res) {
     console.log('Wylogowanie...')
     flaga = false;
+    var index = userzy.indexOf(req.user.username);
+    userzy.splice(index, 1); // wazna funkcja do kasowania aktualnie zalogowanych usserow
+    //log
+    var listaUserow = "wylogowal sie " + req.user.username + " o id " + index + " ,pozostali userzy to ";
+    id--;
+    userzy.forEach(function(usr) {
+        listaUserow += " " + usr;
+    });
+    console.log(listaUserow);
+    //--
     req.logout();
     res.redirect('/login.html');
 });
@@ -155,6 +199,25 @@ sio.sockets.on('connection', function(socket) {
 
     socket.on('reply', function(data) {
         console.log(data);
+    });
+
+    socket.on('askForData', function(user) {
+        //var cialo = "<p>" + user + "<br />";
+        console.log("ask for data by " + user)
+        var replyobj;
+        client.get(user + "data", function(err, reply) {
+
+            //console.log(reply.toString());
+
+            replyobj = JSON.parse(reply);
+
+            if (user.length > 1 && replyobj)
+                socket.emit('updateData', replyobj);
+            //cialo += "waga: " + replyobj.waga + "<br />";
+            //cialo += "tluszcz: " + replyobj.tluszcz + "<br />";
+            //cialo += "obwod bicepsa: " + replyobj.bicek + "<br /></p>";
+        });
+        //cialo
     });
 
     /** 

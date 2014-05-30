@@ -4,7 +4,7 @@ module.exports = function() {
 
     app.get('/:id', function(req, res) {
         var body = '<html><body>';
-        res.body = '<p>' + req.params.id.toString(); + '</p>';
+        body += '<p>' + req.params.id + '</p>';
         body += '</body></html>';
         res.send(body);
     });

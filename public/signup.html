@@ -2,9 +2,12 @@
 <head>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+  <script src="js/main.js"></script>
 </head>
-<body>
-    <div class="container">
+<body data-ng-app="serwis">
+    <div data-ng-controller="chatCtrlr" class="container">
 
       <form action="/signup" method="post" class="form-signin" role="form">
         <h2 class="form-signin-heading">Proszę się zarejestrować</h2>
