@@ -7,6 +7,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var socketIo = require('socket.io');
 var passportSocketIo = require('passport.socketio');
 var sessionStore = new connect.session.MemoryStore();
+
 var sessionSecret = 'wielkiSekret44';
 var sessionKey = 'connect.sid';
 var server;
@@ -15,10 +16,11 @@ var sio;
 var id = 0;
 
 var redis = require("redis"),
-    client = redis.createClient();
+    client = redis.createClient()
 
-var userzy = []; // lista aktualnie zalogowanych userow
-var profiles = [];
+    var userzy = []; // lista aktualnie zalogowanych userow
+var allClients = [];
+var loggedClients = [];
 
 // Konfiguracja passport.js
 passport.serializeUser(function(user, done) {
@@ -32,37 +34,25 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
         console.log("Sprawdzam usera " + username);
 
-        var zalogowany = false;
+        client.get(username, function(err, reply) {
+            if (reply !== null && reply.toString() === password) {
+                console.log("user OK");
+                var d = new Date();
+                userzy.push(username);
+                client.rpush("LOG", username + ": " + d, function(err, reply) {
+                    console.log("Zapis w logach");
+                });
 
-        for (var i in userzy) {
-            if (userzy[i] === username) {
-                zalogowany = true;
-                console.log("juz zalogowany");
+                return done(null, {
+                    username: username,
+                    password: password
+                });
+            } else {
+                console.log("EE");
+                flaga = false;
+                return done(null, false);
             }
-        }
-        if (zalogowany) {
-            return done(null, false);
-        } else {
-            client.get(username, function(err, reply) {
-                if (reply !== null && reply.toString() === password) {
-                    console.log("user OK");
-                    var d = new Date();
-                    userzy.push(username);
-                    client.rpush("LOG", username + ": " + d, function(err, reply) {
-                        console.log("Zapis w logach");
-                    });
-
-                    return done(null, {
-                        username: username,
-                        password: password
-                    });
-                } else {
-                    console.log("EE");
-                    flaga = false;
-                    return done(null, false);
-                }
-            });
-        }
+        });
     }
 ));
 
@@ -130,10 +120,10 @@ app.post('/edit', function(req, res) {
     };
 
     var jsondata = JSON.stringify(data)
+    console.log(jsondata);
     client.set(username + "data", jsondata, function(err, reply) {
         console.log(reply.toString());
     });
-    client.rpush('profiles', username);
 
     res.redirect('/')
 });
@@ -143,7 +133,6 @@ app.post('/login',
         failureRedirect: '/login'
     }),
     function(req, res) {
-        //sprawdzanie czy istnieje dla usera dane na temat jego profilu , jesli nie to przekieruj na panel dodawania informacji
         client.keys('*', function(err, keys) {
             if (err) return console.log(err);
             if (keys.indexOf(req.user.username + "data") > -1) {
@@ -157,9 +146,23 @@ app.post('/login',
 
 app.get('/logout', function(req, res) {
     console.log('Wylogowanie...')
+    flaga = false;
+    var index = userzy.indexOf(req.user.username);
+    userzy.splice(index, 1); // wazna funkcja do kasowania aktualnie zalogowanych usserow
+    //log
+    var listaUserow = "wylogowal sie " + req.user.username + " o id " + index + " ,pozostali userzy to ";
+
+    userzy.forEach(function(usr) {
+        listaUserow += " " + usr;
+    });
+    console.log(listaUserow);
+    //--
     req.logout();
     res.redirect('/login.html');
 });
+
+server = http.createServer(app);
+sio = socketIo.listen(server);
 
 var onAuthorizeSuccess = function(data, accept) {
     console.log('Udane połączenie z socket.io');
@@ -173,26 +176,6 @@ var onAuthorizeFail = function(data, message, error, accept) {
     console.log('Nieudane połączenie z socket.io:', message);
     accept(null, false);
 };
-
-server = http.createServer(app);
-sio = socketIo.listen(server);
-
-
-var getProfiles = function() {
-    client.lrange('profiles', 0, -1, function(err, items) {
-        if (err) throw err;
-        var profiles = [];
-        items.forEach(function(item, i) {
-            var userData = "";
-
-            client.get(item + "data", function(err, reply) {
-                userData = JSON.parse(reply);
-                profiles.push(userData);
-                sio.sockets.emit('appendProfile', userData);
-            });
-        });
-    });
-}
 
 sio.set('authorization', passportSocketIo.authorize({
     passport: passport,
@@ -209,39 +192,19 @@ sio.set('log level', 2); // 3 == DEBUG, 2 == INFO, 1 == WARN, 0 == ERROR
 sio.sockets.on('connection', function(socket) {
     var myId = id;
     id++;
-    console.log("Połączenie, id: " + myId + " user: " + userzy[myId]);
-
-    //socket.emit('profiles', profiles);
-
-    getProfiles();
-
-    if (userzy[myId]) {
-        socket.emit('username', userzy[myId]); // dodatkowo wykona emit ask for data w main.js
-    } else {
-        socket.emit('oknoLogowania');
-    }
+    allClients.push(socket);
 
     socket.on('disconnect', function() {
-        console.log('nastapil disconnect usera o id:' + myId + ', name: ' + userzy[myId]);
+        var i = allClients.indexOf(socket);
+        allClients.splice(i, 1)
 
-        var listaUserow = "pozostali jeszcze: ";
-        id--;
-        userzy.splice(myId, 1); // kasowanie usera
-        userzy.forEach(function(usr, index) {
-            listaUserow += index + "." + usr + " ";
-        });
-        if (listaUserow.length > 21) console.log(listaUserow);
-
-        socket.emit('wyloguj');
     });
 
     socket.on('askForData', function(user) {
         console.log("ask for data by " + user)
         var replyobj;
         client.get(user + "data", function(err, reply) {
-
             replyobj = JSON.parse(reply);
-
             if (user.length > 1 && replyobj)
                 socket.emit('updateData', replyobj);
         });

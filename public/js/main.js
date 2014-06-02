@@ -19,28 +19,37 @@ app.controller('chatCtrlr', ['$scope', 'socket',
         var safe_tags_replace = function(str) {
             return str.replace(/[&<>]/g, replaceTag);
         };
-        $scope.msgs = [];
         $scope.connected = false;
-        $scope.zmienNikus = false;
-        $scope.nik = "";
         $scope.user = "";
-        $scope.dupa = false;
         $scope.userData = {};
-        $scope.userWaga = "";
+        $scope.profiles = [];
 
-        $scope.wyswietlNik = function() {
-            return $scope.user;
-        };
+        $scope.wyswietlProfile = function() {
+            var cialo = "";
 
-
+            $scope.profiles.forEach(function(pro) {
+                cialo += "<ul class='nav nav-sidebar'>";
+                cialo += "<li><b>" + pro.username + "</b></li>";
+                cialo += "<li>" + pro.waga + "</li>";
+                cialo += "<li>" + pro.tluszcz + "</li>";
+                cialo += "<li>" + pro.bicek + "</li>";
+                cialo += "</ul>";
+            });
+            $('#profile').append(cialo);
+        }
 
         socket.on('connect', function() {
             $scope.connected = true;
             $scope.$digest();
         });
 
-        socket.on('history', function(data) {
-            $scope.msgs = data;
+        socket.on('profiles', function(data) {
+            $scope.profiles = data;
+            $scope.$digest();
+        });
+
+        socket.on('appendProfile', function(data) {
+            $scope.profiles.push(data);
             $scope.$digest();
         });
 
@@ -51,11 +60,13 @@ app.controller('chatCtrlr', ['$scope', 'socket',
         });
 
         socket.on('updateData', function(data) {
-            $scope.userWaga = data.waga;
-            alert(data.waga + " dupa");
-            //$scope.userData = data;
+            $scope.userData = data;
             $scope.$digest();
-        })
+        });
 
+        //przekieruj na okno logowania - odswiezanie
+        socket.on('oknoLogowania', function() {
+            window.location = '/login.html';
+        });
     }
 ]);
