@@ -50,6 +50,7 @@
             <div class="row">
                 <!-- lewa kolumna -->
                 <div class="col-md-2 boczne">
+                <div data-ng-click="klikNaProfil()">
                     <p> <b>{{userData.imie}} {{userData.nazwisko}}</b>
                     </p>
                     <p>{{userData.miasto}}</p>
@@ -58,38 +59,37 @@
                     <p>Biceps: {{userData.bicek}}cm</p>
                     <p>Wzrost: {{userData.wzrost}}cm</p>
                 </div>
-                <!-- tablica środkowa -->
-                <div class="col-md-8 col-md-offset-2 main">
-                    <h1 class="page-header">Dashboard</h1>
+                    <div class="spacer30"></div>
+                    
+                    <button data-ng-click="wyswietlPanelDodaniaTreningu()"> Dodaj nowy trening </button>
+                </div>
 
-                    <div class="row placeholders">
-                        <div class="col-xs-6 col-sm-3 placeholder">
-                            <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-                            <h4>Label</h4>
-                            <span class="text-muted">Something else</span>
-                        </div>
-                        <div class="col-xs-6 col-sm-3 placeholder">
-                            <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-                            <h4>Label</h4>
-                            <span class="text-muted">Something else</span>
-                        </div>
-                        <div class="col-xs-6 col-sm-3 placeholder">
-                            <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-                            <h4>Label</h4>
-                            <span class="text-muted">Something else</span>
-                        </div>
-                        <div class="col-xs-6 col-sm-3 placeholder">
-                            <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-                            <h4>Label</h4>
-                            <span class="text-muted">Something else</span>
-                        </div>
-                    </div>
-                    <h2 class="sub-header">Section title</h2>
+                <!-- tablica środkowa -->
+                <div class="col-md-8 col-md-offset-2 main" id="dashboard">
+                <div data-ng-show="pokazTrening">
+                    Nazwa treningu: <input type="text" data-ng-model="nowyTrening.nazwa">
+                    <div class="spacer10"></div>
+                    Poniedziałek:  <input type="text" data-ng-model="nowyTrening.poniedzialek">
+                    <div class="spacer10"></div>
+                    Wtorek: <input type="text" data-ng-model="nowyTrening.wtorek">
+                    <div class="spacer10"></div>
+                    Środa: <input type="text" data-ng-model="nowyTrening.sroda">
+                    <div class="spacer10"></div>
+                    Czwartek: <input type="text" data-ng-model="nowyTrening.czwartek">
+                    <div class="spacer10"></div>
+                    Piątek: <input type="text" data-ng-model="nowyTrening.piatek">
+                    <div class="spacer10"></div>
+                    Sobota: <input type="text" data-ng-model="nowyTrening.sobota">
+                    <div class="spacer10"></div>
+                    Niedziela: <input type="text" data-ng-model="nowyTrening.niedziela">
+                    <div class="spacer10"></div>
+                    <button data-ng-click="dodajTrening()"> Dodaj nowy trening </button>
+                </div>
                 </div>
                 <!-- prawa kolumna -->
                 <div class="col-md-2 boczne zeScrollem col-md-offset-10">
 
-                    <ul class='nav nav-sidebar' ng-repeat="profile in profiles track by $index">
+                    <ul class='nav nav-sidebar' ng-click="klikNaInny()" ng-repeat="profile in profiles track by $index" id="{{profile.username}}">
 
                         <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
                             <li>
@@ -98,54 +98,10 @@
                                 <li>BF: {{profile.tluszcz}}%</li>
                                 <li>Biceps: {{profile.bicek}}cm</li>
                                 <li>Wzrost: {{profile.wzrost}}cm</li>
-                                <!--
-                    <ul class="nav nav-sidebar">
-                                <li class="active">
-                                    <a href="#">Overview</a>
-                                </li>
-                                <li>
-                                    <a href="#">Reports</a>
-                                </li>
-                                <li>
-                                    <a href="#">Analytics</a>
-                                </li>
-                                <li>
-                                    <a href="#">Export</a>
-                                </li>
-                            </ul>
-                            <ul class="nav nav-sidebar">
-                                <li>
-                                    <a href="">Nav item</a>
-                                </li>
-                                <li>
-                                    <a href="">Nav item again</a>
-                                </li>
-                                <li>
-                                    <a href="">One more nav</a>
-                                </li>
-                                <li>
-                                    <a href="">Another nav item</a>
-                                </li>
-                                <li>
-                                    <a href="">More navigation</a>
-                                </li>
-                            </ul>
-                            <ul class="nav nav-sidebar">
-                                <li>
-                                    <a href="">Nav item again</a>
-                                </li>
-                                <li>
-                                    <a href="">One more nav</a>
-                                </li>
-                                <li>
-                                    <a href="">Another nav item</a>
-                                </li>
-                            </ul>
-                            -->
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-</body>
+    </body>
     </html>

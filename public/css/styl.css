@@ -110,6 +110,11 @@ body {
 }
 .zeScrollem {
   max-height: 600px;
-    overflow-y:scroll; 
+  overflow-y:scroll;
+  padding-left: 20px; 
 }
 
+
+#zlyLogin{
+  display:none !important;
+}

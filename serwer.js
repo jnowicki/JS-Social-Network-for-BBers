@@ -186,7 +186,7 @@ app.post('/edit', function(req, res) {
 
 app.post('/login',
     passport.authenticate('local', {
-        failureRedirect: '/login'
+        failureRedirect: '/login.html'
     }),
     function(req, res) {
         //sprawdzanie czy istnieje dla usera dane na temat jego profilu , jesli nie to przekieruj na panel dodawania informacji
@@ -310,6 +310,11 @@ sio.sockets.on('connection', function(socket) {
             if (user.length > 1 && replyobj)
                 socket.emit('updateData', replyobj);
         });
+    });
+
+    socket.on('dodajTrening', function(trening, user) {
+        client.rpush(user + 'treningi', trening);
+        console.log("dodalem trening do " + user + " o nazwie " + trening.nazwa);
     });
 });
 

@@ -1,26 +1,41 @@
 <html>
 <head>
   <title>Serwis dla samodoskonaleńców</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script>
+  if(window.location.search){  
+    $(function () {
+      $("#zlyLogin").hide();
+      $("#zlyLogin").empty();
+      $("#zlyLogin").append("<p>Podałeś błędy login lub hasło</p>");
+      $("#zlyLogin").show("slow");
+      var timer = setTimeout(function(){
+        $("#zlyLogin").hide("slow");
+      }, 3000);
+    });
+  }
+  </script>
 </head>
 <body>
-    <div class="container">
+  <div class="container">
 
-      <form action="/login" method="post" class="form-signin" role="form">
-        <h2 class="form-signin-heading">Zaloguj się</h2>
-        <input name="username" type="text" class="form-control" placeholder="Login" required autofocus>
-        <input name="password" type="password" class="form-control" placeholder="Hasło" required>
-        <label class="checkbox">
-          <input type="checkbox" value="remember-me"> Zapamiętaj mnie
-        </label>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Zaloguj</button>
-        <label class="well span6">
-        Nie masz konta? Nic nie szkodzi. <a href="/signup.html">Dołącz do nas</a>
-        </label>
-      </form>
-        
+    <form action="/login" method="post" class="form-signin" role="form">
+      <h2 class="form-signin-heading">Zaloguj się</h2>
+      <input name="username" type="text" class="form-control" placeholder="Login" required autofocus>
+      <input name="password" type="password" class="form-control" placeholder="Hasło" required>
+      <label class="checkbox">
+        <input type="checkbox" value="remember-me">Zapamiętaj mnie</label>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Zaloguj</button>
+      <label class="well span6">
+        Nie masz konta? Nic nie szkodzi.
+        <a href="/signup.html">Dołącz do nas</a>
+      </label>
+                  <div id='zlyLogin' class="well span6">
+        </div>
+    </form>
 
-    </div>
+  </div>
 </body>
 </html>

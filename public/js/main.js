@@ -12,8 +12,24 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
         $scope.user = "";
         $scope.userData = {};
         $scope.profiles = [];
+        $scope.pokazTrening = false;
 
+        $scope.klikNaProfil = function() {
+            $('#dashboard').empty();
+            $('#dashboard').append('<p>' + $scope.userData.username + '</p>');
+        };
 
+        $scope.wyswietlPanelDodaniaTreningu = function() {
+            $scope.pokazTrening = true;
+
+        }
+
+        $scope.dodajTrening = function() {
+            alert("chcesz dodac" + $scope.nowyTrening.nazwa + "ty gnoju");
+            socket.emit('dodajTrening', $scope.nowyTrening, $scope.user);
+            $scope.nowyTrening = {};
+            $scope.pokazTrening = false;
+        }
 
         socket.on('connect', function() {
             $scope.connected = true;
@@ -26,7 +42,10 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
         });
         /// tego tak naprawde uzywam
         socket.on('appendProfile', function(data) {
-            $scope.profiles.push(data);
+            if (data.username !== $scope.user) {
+                $scope.profiles.push(data);
+
+            }
             $scope.$digest();
         });
 
