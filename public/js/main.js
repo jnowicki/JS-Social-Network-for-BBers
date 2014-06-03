@@ -12,34 +12,45 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
         $scope.user = "";
         $scope.userData = {};
         $scope.profiles = [];
-        $scope.pokazTrening = false;
+        $scope.treningi = [];
 
-        $scope.klikNaProfil = function() {
-            $('#dashboard').empty();
-            $('#dashboard').append('<p>' + $scope.userData.username + '</p>');
-        };
+        $scope.pokazPanelDodaniaTreningu = false;
+        $scope.pokazPanelTreningow = false;
+        $scope.podgladanyProfil = "";
+
 
         $scope.wyswietlPanelDodaniaTreningu = function() {
-            $scope.pokazTrening = true;
+            $scope.pokazPanelTreningow = false;
+            $scope.pokazPanelDodaniaTreningu = true;
 
         }
 
         $scope.dodajTrening = function() {
-            alert("chcesz dodac" + $scope.nowyTrening.nazwa + "ty gnoju");
             socket.emit('dodajTrening', $scope.nowyTrening, $scope.user);
+            console.log($scope.nowyTrening.nazwa);
             $scope.nowyTrening = {};
-            $scope.pokazTrening = false;
+            $scope.pokazPanelDodaniaTreningu = false;
         }
+        ////////// dostan ten trneing na ktory spojrzysz
+        $scope.getTrening = function(user) {
+            console.log("getTrening od " + user);
+            $scope.treningi = [];
+            socket.emit('zapytanieOTreningi', user);
+        }
+        ////////// kiedy dostaniesz z servera zwrot treningow to go dodaj
+        socket.on('zwrotTreningow', function(treningi, user) {
+            $scope.treningi = treningi;
+            $scope.pokazPanelTreningow = true;
+            $scope.pokazPanelDodaniaTreningu = false;
+            $scope.podgladanyProfil = user;
+            $scope.$digest();
+        })
 
         socket.on('connect', function() {
             $scope.connected = true;
             $scope.$digest();
         });
-        /// tego nie uzywam
-        socket.on('profiles', function(data) {
-            $scope.profiles = data;
-            $scope.$digest();
-        });
+
         /// tego tak naprawde uzywam
         socket.on('appendProfile', function(data) {
             if (data.username !== $scope.user) {

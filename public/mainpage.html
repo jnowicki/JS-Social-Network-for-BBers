@@ -50,58 +50,110 @@
             <div class="row">
                 <!-- lewa kolumna -->
                 <div class="col-md-2 boczne">
-                <div data-ng-click="klikNaProfil()">
-                    <p> <b>{{userData.imie}} {{userData.nazwisko}}</b>
-                    </p>
-                    <p>{{userData.miasto}}</p>
-                    <p>{{userData.waga}}kg</p>
-                    <p>BF: {{userData.tluszcz}}%</p>
-                    <p>Biceps: {{userData.bicek}}cm</p>
-                    <p>Wzrost: {{userData.wzrost}}cm</p>
-                </div>
+                    <div class='jumbotron' data-ng-click="getTrening(userData.username)"> <b>{{userData.imie}} {{userData.nazwisko}}</b>
+                        <br />
+                        {{userData.miasto}}
+                        <br />
+                        {{userData.waga}}kg
+                        <br />
+                        BF: {{userData.tluszcz}}%
+                        <br />
+                        Biceps: {{userData.bicek}}cm
+                        <br />
+                        Wzrost: {{userData.wzrost}}cm
+                    </div>
                     <div class="spacer30"></div>
-                    
-                    <button data-ng-click="wyswietlPanelDodaniaTreningu()"> Dodaj nowy trening </button>
+                    <div class="jumbotron">
+                        <button class="btn btn-sm btn-default" data-ng-click="wyswietlPanelDodaniaTreningu()">Dodaj nowy trening</button>
+                    </div>
                 </div>
 
                 <!-- tablica środkowa -->
                 <div class="col-md-8 col-md-offset-2 main" id="dashboard">
-                <div data-ng-show="pokazTrening">
-                    Nazwa treningu: <input type="text" data-ng-model="nowyTrening.nazwa">
-                    <div class="spacer10"></div>
-                    Poniedziałek:  <input type="text" data-ng-model="nowyTrening.poniedzialek">
-                    <div class="spacer10"></div>
-                    Wtorek: <input type="text" data-ng-model="nowyTrening.wtorek">
-                    <div class="spacer10"></div>
-                    Środa: <input type="text" data-ng-model="nowyTrening.sroda">
-                    <div class="spacer10"></div>
-                    Czwartek: <input type="text" data-ng-model="nowyTrening.czwartek">
-                    <div class="spacer10"></div>
-                    Piątek: <input type="text" data-ng-model="nowyTrening.piatek">
-                    <div class="spacer10"></div>
-                    Sobota: <input type="text" data-ng-model="nowyTrening.sobota">
-                    <div class="spacer10"></div>
-                    Niedziela: <input type="text" data-ng-model="nowyTrening.niedziela">
-                    <div class="spacer10"></div>
-                    <button data-ng-click="dodajTrening()"> Dodaj nowy trening </button>
-                </div>
+                    <div data-ng-show="pokazPanelDodaniaTreningu">
+                        <form role="form">
+                            <div class="form-group">
+                                <label>Nazwa treningu:</label>
+                                <input type="text" data-ng-model="nowyTrening.nazwa"></div>
+                            <div class="spacer10"></div>
+                            <div class="form-group">
+                                Poniedziałek:
+                                <textarea class="form-control" data-ng-model="nowyTrening.poniedzialek" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Wtorek:
+                                <textarea class="form-control" data-ng-model="nowyTrening.wtorek" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Środa:
+                                <textarea class="form-control" data-ng-model="nowyTrening.sroda" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Czwartek:
+                                <textarea class="form-control" data-ng-model="nowyTrening.czwartek" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Piątek:
+                                <textarea class="form-control" data-ng-model="nowyTrening.piatek" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Sobota:
+                                <textarea class="form-control" data-ng-model="nowyTrening.sobota" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                                Niedziela:
+                                <textarea class="form-control" data-ng-model="nowyTrening.niedziela" rows="3"></textarea>
+                                <div class="spacer10"></div>
+                            </div>
+                            <button data-ng-click="dodajTrening()">Dodaj nowy trening</button>
+                        </form>
+                    </div>
+                    <div data-ng-show="pokazPanelTreningow">
+
+                        <h2> Profil </h2>
+                        
+
+                        <h2> Treningi </h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nazwa</th>
+                                    <th>Poniedzialek</th>
+                                    <th>Wtorek</th>
+                                    <th>Sroda</th>
+                                    <th>Czwartek</th>
+                                    <th>Piatek</th>
+                                    <th>Sobota</th>
+                                    <th>Niedziela</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    <tr ng-repeat="trening in treningi track by $index">
+                                        <td>{{trening.nazwa}}</td>
+                                        <td>{{trening.poniedzialek}}</td>
+                                        <td>{{trening.wtorek}}</td>
+                                        <td>{{trening.sroda}}</td>
+                                        <td>{{trening.czwartek}}</td>
+                                        <td>{{trening.piatek}}</td>
+                                        <td>{{trening.sobota}}</td>
+                                        <td>{{trening.niedziela}}</td>                                        
+                                    </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
                 </div>
                 <!-- prawa kolumna -->
                 <div class="col-md-2 boczne zeScrollem col-md-offset-10">
 
-                    <ul class='nav nav-sidebar' ng-click="klikNaInny()" ng-repeat="profile in profiles track by $index" id="{{profile.username}}">
-
-                        <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
-                            <li>
-                                <li>{{profile.miasto}}</li>
-                                <li>{{profile.waga}}kg</li>
-                                <li>BF: {{profile.tluszcz}}%</li>
-                                <li>Biceps: {{profile.bicek}}cm</li>
-                                <li>Wzrost: {{profile.wzrost}}cm</li>
-                        </ul>
-                    </div>
+                    <ul class='nav nav-sidebar' ng-click="getTrening(profile.username)" ng-repeat="profile in profiles track by $index" id="{{profile.username}}">
+                        <div class="jumbotron">
+                            <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
+                            </li>
+                            <li>{{profile.miasto}}</li>
+                            <li>{{profile.waga}}kg</li>
+                            <li>BF: {{profile.tluszcz}}%</li>
+                            <li>Biceps: {{profile.bicek}}cm</li>
+                            <li>Wzrost: {{profile.wzrost}}cm</li>
+                        </div>
+                    </ul>
                 </div>
             </div>
         </div>
-    </body>
-    </html>
+    </div>
+</body>
+</html>

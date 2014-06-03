@@ -311,11 +311,32 @@ sio.sockets.on('connection', function(socket) {
                 socket.emit('updateData', replyobj);
         });
     });
+    /////// Obsługa treningów
+    /////////////////////////
 
-    socket.on('dodajTrening', function(trening, user) {
-        client.rpush(user + 'treningi', trening);
-        console.log("dodalem trening do " + user + " o nazwie " + trening.nazwa);
+    /////// Kiedy dostaniesz od klienta zapytanie o treningi, to wyslij mu te treningi z edisa
+    socket.on('zapytanieOTreningi', function(user) {
+        console.log("ask for treningi for " + user + "treningi");
+        client.lrange(user + 'treningi', 0, -1, function(err, items) {
+            if (err) throw err;
+            var lista = [];
+            for (var i = 0; i < items.length; i++) {
+                var parsedItem = JSON.parse(items[i]);
+                lista.push(parsedItem);
+            }
+            socket.emit('zwrotTreningow', lista, user);
+
+        });
     });
+
+    /////// kiedy klient doda jakis trening to dodaj ten trening do bazy na jego konto treningowe w redisie
+    socket.on('dodajTrening', function(trening, user) {
+        var jsontrening = JSON.stringify(trening);
+        client.rpush(user + 'treningi', jsontrening);
+        console.log("dodalem trening do " + user + " o zawartosci " + jsontrening);
+    });
+    /////////////////////////////
+    /////////////////////////////
 });
 
 server.listen(3000, function() {
