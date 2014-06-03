@@ -117,23 +117,69 @@ app.post('/signup',
 
 //utworzenie klasy PROFIL (waga,tluszcz itp) w redisie i powiazanie z klasa username,password
 app.post('/edit', function(req, res) {
+
+    //wybranie dzisiejszej daty
+    ////////
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+
+    today = dd + '/' + mm + '/' + yyyy;
+    ///////////////////
+
     var waga = req.body.waga;
     var tluszcz = req.body.tluszcz;
     var bicek = req.body.bicek;
+    var wzrost = req.body.wzrost;
+    var imie = req.body.imie;
+    var nazwisko = req.body.nazwisko;
+    var miasto = req.body.miasto;
+    var dataUtw = today;
     var username = req.user.username;
+
+    //// wyciagnij id ktorzy trzeba przyporzadkowac profilowi
+    /*
+    client.get('userCount', function(err, reply) {
+        userData = JSON.parse(reply);
+        profiles.push(userData);
+        sio.sockets.emit('appendProfile', userData);
+    });
+    */
 
     var data = {
         waga: waga,
         tluszcz: tluszcz,
         bicek: bicek,
-        username: username
+        username: username,
+        wzrost: wzrost,
+        imie: imie,
+        nazwisko: nazwisko,
+        miasto: miasto,
+        dataUtw: dataUtw,
     };
 
     var jsondata = JSON.stringify(data)
+    ///// ustaw w redisie zmienna posiadajace informacjen a temat profili
     client.set(username + "data", jsondata, function(err, reply) {
         console.log(reply.toString());
     });
+    //// dodaj do listy istniejacych profili dodany profil
     client.rpush('profiles', username);
+
+    //// zwieksz licznik userow ktorzy utworzyli swoje profile
+    client.incr('userCount');
+
+    //// rozeslij nowy profil do uzytkownikow
+    sio.sockets.emit('appendProfile', data)
 
     res.redirect('/')
 });
@@ -155,10 +201,17 @@ app.post('/login',
     }
 );
 
+
 app.get('/logout', function(req, res) {
     console.log('Wylogowanie...')
     req.logout();
     res.redirect('/login.html');
+});
+
+app.get('/createNew', function(req, res) {
+    console.log('Wylogowanie...')
+    req.logout();
+    res.redirect('/signup.html');
 });
 
 var onAuthorizeSuccess = function(data, accept) {
@@ -181,13 +234,13 @@ sio = socketIo.listen(server);
 var getProfiles = function() {
     client.lrange('profiles', 0, -1, function(err, items) {
         if (err) throw err;
-        var profiles = [];
+        //var profiles = [];
         items.forEach(function(item, i) {
             var userData = "";
 
             client.get(item + "data", function(err, reply) {
                 userData = JSON.parse(reply);
-                profiles.push(userData);
+                //profiles.push(userData);
                 sio.sockets.emit('appendProfile', userData);
             });
         });
@@ -211,29 +264,41 @@ sio.sockets.on('connection', function(socket) {
     id++;
     console.log("Połączenie, id: " + myId + " user: " + userzy[myId]);
 
-    //socket.emit('profiles', profiles);
-
+    /// rozeslij userom profile
     getProfiles();
 
+    //// rozeslij userom ich username
     if (userzy[myId]) {
         socket.emit('username', userzy[myId]); // dodatkowo wykona emit ask for data w main.js
     } else {
-        socket.emit('oknoLogowania');
+        socket.emit('oknoLogowania'); // przekieruj na okno logowania jak odswiezasz strone
     }
 
     socket.on('disconnect', function() {
         console.log('nastapil disconnect usera o id:' + myId + ', name: ' + userzy[myId]);
 
-        var listaUserow = "pozostali jeszcze: ";
         id--;
         userzy.splice(myId, 1); // kasowanie usera
+
+        /// DO KONSOLI logow
+        var listaUserow = "pozostali jeszcze: ";
         userzy.forEach(function(usr, index) {
             listaUserow += index + "." + usr + " ";
         });
         if (listaUserow.length > 21) console.log(listaUserow);
+        /////
 
-        socket.emit('wyloguj');
+        socket.emit('oknoLogowania');
     });
+
+    socket.on('usunProfil', function(user) {
+        console.log('Usuwam ' + user);
+        client.del(user);
+        client.del(user + 'data');
+        client.decr('userCount');
+        client.lrem('profiles', user, 1);
+        socket.disconnect();
+    })
 
     socket.on('askForData', function(user) {
         console.log("ask for data by " + user)

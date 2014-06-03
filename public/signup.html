@@ -1,20 +1,21 @@
 <html>
 <head>
+<title>Serwis dla samodoskonaleńców</title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
-  <script src="js/main.js"></script>
 </head>
-<body data-ng-app="serwis">
-    <div data-ng-controller="chatCtrlr" class="container">
+<body>
+    <div class="container">
 
       <form action="/signup" method="post" class="form-signin" role="form">
-        <h2 class="form-signin-heading">Proszę się zarejestrować</h2>
+        <h2 class="form-signin-heading">Wybierz login i hasło</h2>
         <input name="username" type="text" class="form-control" placeholder="Login" required autofocus>
         <input name="password" type="password" class="form-control" placeholder="Hasło" required>
         <input name="confirmation" type="password" class="form-control" placeholder="Potwierdź hasło" required>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Zaloguj</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Utwórz konto</button>
+                <label class="well span6">
+        Jeśli masz już konto, to kliknij <a href="/login.html">tutaj</a>
+        </label>
       </form>
 
     </div>

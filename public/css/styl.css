@@ -108,3 +108,8 @@ body {
 	position: fixed;
 
 }
+.zeScrollem {
+  max-height: 600px;
+    overflow-y:scroll; 
+}
+

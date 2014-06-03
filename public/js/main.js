@@ -5,49 +5,26 @@ app.factory('socket', function() {
     return socket;
 });
 
-app.controller('chatCtrlr', ['$scope', 'socket',
+app.controller('serwisCtrlr', ['$scope', 'socket',
     function($scope, socket) {
 
-        var tagsToReplace = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-        var replaceTag = function(tag) {
-            return tagsToReplace[tag] || tag;
-        };
-        var safe_tags_replace = function(str) {
-            return str.replace(/[&<>]/g, replaceTag);
-        };
         $scope.connected = false;
         $scope.user = "";
         $scope.userData = {};
         $scope.profiles = [];
 
-        $scope.wyswietlProfile = function() {
-            var cialo = "";
 
-            $scope.profiles.forEach(function(pro) {
-                cialo += "<ul class='nav nav-sidebar'>";
-                cialo += "<li><b>" + pro.username + "</b></li>";
-                cialo += "<li>" + pro.waga + "</li>";
-                cialo += "<li>" + pro.tluszcz + "</li>";
-                cialo += "<li>" + pro.bicek + "</li>";
-                cialo += "</ul>";
-            });
-            $('#profile').append(cialo);
-        }
 
         socket.on('connect', function() {
             $scope.connected = true;
             $scope.$digest();
         });
-
+        /// tego nie uzywam
         socket.on('profiles', function(data) {
             $scope.profiles = data;
             $scope.$digest();
         });
-
+        /// tego tak naprawde uzywam
         socket.on('appendProfile', function(data) {
             $scope.profiles.push(data);
             $scope.$digest();

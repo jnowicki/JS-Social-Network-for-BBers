@@ -3,15 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Serwis dla kulturystów</title>
+    <title>Serwis dla samodoskonaleńców</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styl.css"></head>
+    <link rel="stylesheet" href="css/spacer.css"></head>
 
 <body data-ng-app="serwis">
-    <div data-ng-controller="chatCtrlr">
+    <div data-ng-controller="serwisCtrlr">
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -26,12 +28,18 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li>
+                            <a href="/usunProfil">Usuń konto</a>
+                        </li>
+                        <li>
                             <a>Zalogowany jako {{user}}</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a href="/logout">Wyloguj</a>
+                        </li>
+                        <li>
+                            <a href="/createNew">Stwórz nowe konto</a>
                         </li>
                     </ul>
                 </div>
@@ -42,11 +50,13 @@
             <div class="row">
                 <!-- lewa kolumna -->
                 <div class="col-md-2 boczne">
-                    <p> <b>{{user}}</b>
+                    <p> <b>{{userData.imie}} {{userData.nazwisko}}</b>
                     </p>
-                    <p>waga: {{userData.waga}}kg</p>
-                    <p>tluszcz: {{userData.tluszcz}}%</p>
-                    <p>biszko: {{userData.bicek}}cm</p>
+                    <p>{{userData.miasto}}</p>
+                    <p>{{userData.waga}}kg</p>
+                    <p>BF: {{userData.tluszcz}}%</p>
+                    <p>Biceps: {{userData.bicek}}cm</p>
+                    <p>Wzrost: {{userData.wzrost}}cm</p>
                 </div>
                 <!-- tablica środkowa -->
                 <div class="col-md-8 col-md-offset-2 main">
@@ -77,62 +87,65 @@
                     <h2 class="sub-header">Section title</h2>
                 </div>
                 <!-- prawa kolumna -->
-                <div class="col-md-2 boczne col-md-offset-10">
+                <div class="col-md-2 boczne zeScrollem col-md-offset-10">
 
-                    <ul class='nav nav-sidebar' ng-repeat="profile in profiles">
+                    <ul class='nav nav-sidebar' ng-repeat="profile in profiles track by $index">
 
-                        <li><b> {{profile.username}} </b><li>
-                        <li> {{profile.waga}} </li>
-                        <li> {{profile.tluszcz}} </li>
-                        <li> {{profile.bicek}} </li>
-                        <!--
+                        <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
+                            <li>
+                                <li>{{profile.miasto}}</li>
+                                <li>{{profile.waga}}kg</li>
+                                <li>BF: {{profile.tluszcz}}%</li>
+                                <li>Biceps: {{profile.bicek}}cm</li>
+                                <li>Wzrost: {{profile.wzrost}}cm</li>
+                                <!--
                     <ul class="nav nav-sidebar">
-                        <li class="active">
-                            <a href="#">Overview</a>
-                        </li>
-                        <li>
-                            <a href="#">Reports</a>
-                        </li>
-                        <li>
-                            <a href="#">Analytics</a>
-                        </li>
-                        <li>
-                            <a href="#">Export</a>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
-                        <li>
-                            <a href="">Nav item</a>
-                        </li>
-                        <li>
-                            <a href="">Nav item again</a>
-                        </li>
-                        <li>
-                            <a href="">One more nav</a>
-                        </li>
-                        <li>
-                            <a href="">Another nav item</a>
-                        </li>
-                        <li>
-                            <a href="">More navigation</a>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
-                        <li>
-                            <a href="">Nav item again</a>
-                        </li>
-                        <li>
-                            <a href="">One more nav</a>
-                        </li>
-                        <li>
-                            <a href="">Another nav item</a>
-                        </li>
-                    </ul>
-                    -->
-                </ul>
+                                <li class="active">
+                                    <a href="#">Overview</a>
+                                </li>
+                                <li>
+                                    <a href="#">Reports</a>
+                                </li>
+                                <li>
+                                    <a href="#">Analytics</a>
+                                </li>
+                                <li>
+                                    <a href="#">Export</a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-sidebar">
+                                <li>
+                                    <a href="">Nav item</a>
+                                </li>
+                                <li>
+                                    <a href="">Nav item again</a>
+                                </li>
+                                <li>
+                                    <a href="">One more nav</a>
+                                </li>
+                                <li>
+                                    <a href="">Another nav item</a>
+                                </li>
+                                <li>
+                                    <a href="">More navigation</a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-sidebar">
+                                <li>
+                                    <a href="">Nav item again</a>
+                                </li>
+                                <li>
+                                    <a href="">One more nav</a>
+                                </li>
+                                <li>
+                                    <a href="">Another nav item</a>
+                                </li>
+                            </ul>
+                            -->
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 </body>
-</html>
+    </html>
