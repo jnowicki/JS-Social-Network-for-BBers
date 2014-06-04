@@ -16,6 +16,7 @@ var id = 0;
 
 var redis = require("redis"),
     client = redis.createClient();
+var fs = require('fs');
 
 var userzy = []; // lista aktualnie zalogowanych userow
 var profiles = [];
@@ -105,7 +106,7 @@ app.post('/signup',
         var confirmation = req.body.confirmation;
 
         if (password === confirmation) {
-            client.set(username, password, function(err, reply) {
+            client.setnx(username, password, function(err, reply) {
                 console.log(reply.toString());
             });
 
@@ -166,6 +167,36 @@ app.post('/edit', function(req, res) {
         miasto: miasto,
         dataUtw: dataUtw,
     };
+
+
+
+    fs.readFile(req.files.image.path, function(err, data) {
+
+        var imageName = req.files.image.name
+
+        /// If there's an error
+        if (!imageName) {
+
+            console.log("There was an error")
+            res.redirect("/");
+            res.end();
+
+        } else {
+            console.log("ZAPISUJE FOTE" + imageName);
+            var newPath = __dirname + "/public/uploads/" + username + ".jpg";
+            console.log(newPath);
+
+            /// write file to uploads/ folder
+            fs.writeFile(newPath, data, function(err) {
+
+                /// let's see it
+
+
+            });
+        }
+    });
+
+
 
     var jsondata = JSON.stringify(data)
     ///// ustaw w redisie zmienna posiadajace informacjen a temat profili
@@ -231,7 +262,7 @@ server = http.createServer(app);
 sio = socketIo.listen(server);
 
 
-var getProfiles = function() {
+var getProfiles = function(socket) {
     client.lrange('profiles', 0, -1, function(err, items) {
         if (err) throw err;
         //var profiles = [];
@@ -241,10 +272,17 @@ var getProfiles = function() {
             client.get(item + "data", function(err, reply) {
                 userData = JSON.parse(reply);
                 //profiles.push(userData);
-                sio.sockets.emit('appendProfile', userData);
+                socket.emit('appendProfile', userData);
             });
         });
     });
+}
+
+var getLubiane = function(socket, user) {
+    client.lrange(user + 'lubiane', 0, -1, function(err, items) {
+        if (err) throw err;
+        socket.emit("uaktualnijLubiane", items)
+    })
 }
 
 sio.set('authorization', passportSocketIo.authorize({
@@ -264,10 +302,12 @@ sio.sockets.on('connection', function(socket) {
     id++;
     console.log("Połączenie, id: " + myId + " user: " + userzy[myId]);
 
-    /// rozeslij userom profile
-    getProfiles();
+    /// rozeslij userowi profile
+    getProfiles(socket);
+    /// rozeslij userowi jego lubiane
+    getLubiane(socket, userzy[myId]);
 
-    //// rozeslij userom ich username
+    //// rozeslij userom ich username i liste zalogowanych aktualnie userow
     if (userzy[myId]) {
         socket.emit('username', userzy[myId]); // dodatkowo wykona emit ask for data w main.js
         sio.sockets.emit('zalogowaniUserzy', userzy);
@@ -331,6 +371,14 @@ sio.sockets.on('connection', function(socket) {
         });
     });
 
+    socket.on('zapytanieOLubiane', function(user) {
+        client.lrange(user.username + 'lubiane', 0, -1, function(err, items) {
+            if (err) throw err;
+            console.log('wysylam uaktualnienie lubianych: ' + items + ' usera: ' + user.username);
+            socket.emit("uaktulnijLubianePodgladanego", items);
+        })
+    });
+
     /////// kiedy klient doda jakis trening to dodaj ten trening do bazy na jego konto treningowe w redisie
     socket.on('dodajTrening', function(trening, user) {
         var jsontrening = JSON.stringify(trening);
@@ -339,6 +387,18 @@ sio.sockets.on('connection', function(socket) {
     });
     /////////////////////////////
     /////////////////////////////
+
+
+    socket.on('polubProfil', function(profil, user) {
+        client.rpush(user + 'lubiane', profil.username, function(err, reply) {
+
+        });
+    });
+
+    socket.on('odlubProfil', function(profil, user) {
+        console.log("dostaje request o skasowanie z " + user + "lubiane, profil: " + profil.username);
+        client.lrem(user + 'lubiane', 0, profil.username);
+    })
 });
 
 server.listen(3000, function() {

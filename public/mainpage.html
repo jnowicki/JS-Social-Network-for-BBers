@@ -33,7 +33,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                        <a data-ng-click="wyloguj()"> Wyloguj</a>
+                            <a data-ng-click="wyloguj()">Wyloguj</a>
                         </li>
                         <li>
                             <a href="/createNew">Stwórz nowe konto</a>
@@ -102,45 +102,47 @@
                         </form>
                     </div>
                     <div data-ng-show="pokazPanelTreningow">
+                    <div class="container">
+                        <div class="row">
+                            <h2><strong>{{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}</strong><br/>{{podgladanyProfil.miasto}}</h2>
+                            <br/>                           
+                            <br/>
+                            
+                            <div class="col-md-4">
+                                Wzrost:
+                                <br/>
+                                Waga:
+                                <br/>
+                                Obwód bicepsa:
+                                <br/>
+                                <br/>
+                                jest z nami od {{podgladanyProfil.dataUtw}}
+                                <br/>
+                                <br/>
+                                <a data-ng-show="czyProfilNieJestWLubianych()" data-ng-click="lubieTo()">Polub profil</a>
+                                <a data-ng-show="!czyProfilNieJestWLubianych()" data-ng-click="nieLubieTo()"> Cofnij propsy </a>
+                                <div ng-show="lubianePodgladanego">lubi {{lubianePodgladanego}}</div>
 
-                        <h2>Profil</h2>
-                        <div class="col-md-6">
-                            <div class="jumbotron niebieski">
-                                {{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}
-                                <br/>
-                                {{podgladanyProfil.miasto}}
-                                <br/>
-                                <div class="spacer10"></div>
+                            </div>
+                            <div class="col-md-4">
                                 {{podgladanyProfil.wzrost}}cm
                                 <br/>
                                 {{podgladanyProfil.waga}}kg
                                 <br/>
-                                obwód bicepsa {{podgladanyProfil.bicek}}cm
-                                <br/>
-                                <div class="spacer10"></div>
-                                jest z nami od {{podgladanyProfil.dataUtw}}
+                                {{podgladanyProfil.bicek}}cm
                                 <br/>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="jumbotron niebieski">
-                                {{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}
-                                <br/>
-                                {{podgladanyProfil.wzrost}}
-                                <br/>
-                                {{podgladanyProfil.waga}}
-                                <br/>
-                                {{podgladanyProfil.dataUtw}}
-                                <br/>
-                                {{podgladanyProfil.bicek}}
-                                <br/>
+                            <div class="col-md-4">
+                                <div ng-style="{color: wzrostKolor}">{{userData.wzrost - podgladanyProfil.wzrost}}cm</div>
+                                <div ng-style="{color: wagaKolor}">{{userData.waga - podgladanyProfil.waga}}kg</div>
+                                <div ng-style="{color: bicekKolor}">{{userData.bicek - podgladanyProfil.bicek}}cm</div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="spacer50"></div>
-                        <h2>Treningi</h2>
+                        <h1 data-ng-show="treningi">Treningi</h1>
 
-                        <table class="table table-hover">
+                        <table data-ng-show="treningi" class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Nazwa</th>
@@ -166,9 +168,9 @@
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
                 </div>
+
                 <!-- prawa kolumna -->
                 <div class="col-md-2 boczne zeScrollem col-md-offset-10">
 
@@ -176,12 +178,9 @@
                         <div class="jumbotron">
                             <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
                             </li>
+                            <li>{{wyswietlStatus(profile.username)}}</li>
                             <li>
-
-                            {{wyswietlStatus(profile.username)}}
-                            </li>
-                            <li>
-                                <img src="/img/indeks.png" class="img-polaroid"></li>
+                                <img src="/uploads/{{profile.username}}.jpg" class="img-polaroid" width="100"></li>
                             <!--
                             <li>{{profile.miasto}}</li>
                         <li>{{profile.waga}}kg</li>

@@ -111,6 +111,7 @@ body {
 .zeScrollem {
   max-height: 600px;
   overflow-y:scroll;
+  overflow-x: hidden;
   padding-left: 20px; 
 }
 
@@ -120,6 +121,14 @@ body {
 }
 
 .niebieski{
-  background-color:#66cccc;
+  
   font-weight: bold;
+}
+
+.list-group li {
+    list-style: none;
+}
+.panel-info, .panel-rating, .panel-more1 {
+    float: left;
+    margin: 0 10px;
 }

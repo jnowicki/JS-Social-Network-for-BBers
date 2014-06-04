@@ -18,7 +18,7 @@
 		</p>
 		<div class="spacer30"></div>
 
-		<form action="/edit" method="post" class="form-signin" role="form">
+		<form action="/edit" method="post" enctype="multipart/form-data" class="form-signin" role="form">
 			<div class="col-lg-3">
 				<div class="form-group">
 					<label class="col-lg-7 control-label">Waga</label>
@@ -64,6 +64,13 @@
 						<input type="text" class="form-control" name="miasto" required><div class="spacer20"></div></div>
 						
 				</div>
+
+								<div class="form-group">
+					<label class="col-lg-7 control-label">Awatar</label>
+					<div class="col-lg-5">
+						<input type="file" name="image" required><div class="spacer20"></div></div>					
+				</div>
+
 
 				<button class="btn btn-md btn-primary btn-block" type="submit">Zatwierdź</button>
 			</div>
