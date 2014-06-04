@@ -3,13 +3,18 @@
   <title>Serwis dla samodoskonaleńców</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <script>
   if(window.location.search){  
     $(function () {
       $("#zlyLogin").hide();
       $("#zlyLogin").empty();
-      $("#zlyLogin").append("<p>Podałeś błędy login lub hasło</p>");
+      if(window.location.search === "?b=-1"){
+        $("#zlyLogin").append("<p>Podałeś błędy login i/lub hasło</p>");
+      }
+      if(window.location.search === "?b=1"){
+        $('#zlyLogin').append("<p>Teraz użyj tych danych do zalogowania się </p>")
+      }
       $("#zlyLogin").show("slow");
       var timer = setTimeout(function(){
         $("#zlyLogin").hide("slow");

@@ -13,6 +13,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
         $scope.userData = {};
         $scope.profiles = [];
         $scope.treningi = [];
+        $scope.diety = [];
         $scope.zalogowaniUserzy = [];
 
         $scope.pokazPanelDodaniaTreningu = false;
@@ -32,14 +33,27 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
 
         $scope.wyswietlPanelDodaniaTreningu = function() {
             $scope.pokazPanelTreningow = false;
+            $scope.pokazPanelDodaniaDiety = false;
             $scope.pokazPanelDodaniaTreningu = true;
 
+        }
+
+        $scope.wyswietlPanelDodaniaDiety = function() {
+            $scope.pokazPanelDodaniaDiety = true;
+            $scope.pokazPanelTreningow = false;
+            $scope.pokazPanelDodaniaTreningu = false;
         }
 
         $scope.dodajTrening = function() {
             socket.emit('dodajTrening', $scope.nowyTrening, $scope.user);
             $scope.nowyTrening = {};
             $scope.pokazPanelDodaniaTreningu = false;
+        }
+
+        $scope.dodajDiete = function() {
+            socket.emit('dodajDiete', $scope.nowaDieta, $scope.user);
+            $scope.nowaDieta = {};
+            $scope.pokazPanelDodaniaDiety = false;
         }
         ////////// dostan ten trneing na ktory spojrzysz
         $scope.getTrening = function(user) {
@@ -50,11 +64,17 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
 
         $scope.usunTrening = function() {
             socket.emit('usunTrening', $scope.selectedTrening, $scope.user);
-            $scope.selectedTrening = {};
-            var index = $scope.treningi.indexOf(selectedTrening);
+            var index = $scope.treningi.indexOf($scope.selectedTrening);
             $scope.treningi.splice(index, 1);
-            $scope.$digest();
+            $scope.selectedTrening = {};
         };
+
+        $scope.usunDiete = function() {
+            socket.emit('usunDiete', $scope.selectedDieta, $scope.user);
+            var index = $scope.diety.indexOf($scope.selectedDieta);
+            $scope.diety.splice(index, 1);
+            $scope.selectedDieta = {};
+        }
 
         $scope.wyswietlStatus = function(user) {
             var zalogowany = false;
@@ -140,7 +160,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             console.log("przyjalem słega: " + $scope.popularnoscUserow['kuba']);
             $scope.$digest();
         });
-        ////////// kiedy dostaniesz z servera zwrot treningow to go dodaj
+        ////////// kiedy dostaniesz z servera zwrot treningow to go dodaj i zrob wiele pomocniczych czynnosci
         socket.on('zwrotTreningow', function(treningi, user) {
             $scope.podgladanyProfil = user;
             //// kod zwiazany z kolorowaniem roznic miedzy podgladanym profilem a aktualnym uzytkownikiem
@@ -169,9 +189,15 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             $scope.treningi = treningi;
             $scope.pokazPanelTreningow = true;
             $scope.pokazPanelDodaniaTreningu = false;
+            $scope.pokazPanelDodaniaDiety = false;
 
             $scope.$digest();
-        })
+        });
+        //// tu juz pomocnicze czynnosci nie sa potrzebne
+        socket.on('zwrotDiet', function(diety, user) {
+            $scope.diety = diety;
+            $scope.$digest();
+        });
 
         socket.on('connect', function() {
             $scope.connected = true;

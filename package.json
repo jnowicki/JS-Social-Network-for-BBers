@@ -1,20 +1,20 @@
 {
-  "name": "serwis-kult",
-  "version": "0.0.0",
-  "description": "Serwis dla kulturystow",
-  "main": "serwer.js",
-  "scripts": {
-    "start": "node serwer.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "connect": "^2.14.5",
-    "express": "^3.5.2",
-    "socket.io": "^0.9.16",
-    "passport": "^0.2.0",
-    "passport-local": "^1.0.0",
-    "passport.socketio": "^3.0.1",
-    "redis": "0.8.3"
-  }
+    "name": "serwis-kult",
+    "version": "0.0.0",
+    "description": "Serwis dla kulturystow",
+    "main": "serwer.js",
+    "scripts": {
+        "start": "node serwer.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "connect": "^2.14.5",
+        "express": "^3.5.2",
+        "socket.io": "^0.9.16",
+        "passport": "^0.2.0",
+        "passport-local": "^1.0.0",
+        "passport.socketio": "^3.0.1",
+        "redis": "0.8.3"
+    }
 }

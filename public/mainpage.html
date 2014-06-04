@@ -55,6 +55,7 @@
                     <div class="spacer30"></div>
                     <div class="jumbotron">
                         <button class="btn btn-sm btn-default" data-ng-click="wyswietlPanelDodaniaTreningu()">Dodaj nowy trening</button>
+                        <button class="btn btn-sm btn-default" data-ng-click="wyswietlPanelDodaniaDiety()">Dodaj nową diete</button>
                         <button class="btn btn-sm btn-default" data-ng-click="usunProfil()">Usuń konto</button>
                     </div>
                 </div>
@@ -91,6 +92,35 @@
                                 <div class="spacer10"></div>
                             </div>
                             <button data-ng-click="dodajTrening()">Dodaj nowy trening</button>
+                        </form>
+                    </div>
+                    <div data-ng-show="pokazPanelDodaniaDiety">
+                        <form role="form">
+                            <div class="form-group">
+                                <label>Nazwa diety:</label>
+                                <input type="text" data-ng-model="nowaDieta.nazwa"></div>
+                            <div class="spacer10"></div>
+                            <div class="form-group">
+                                Śniadanie
+                                <textarea class="form-control" data-ng-model="nowaDieta.sniadanie" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                                Lunch:
+                                <textarea class="form-control" data-ng-model="nowaDieta.lunch" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                                Obiad:
+                                <textarea class="form-control" data-ng-model="nowaDieta.obiad" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                                Posiłek przedtreningowy:
+                                <textarea class="form-control" data-ng-model="nowaDieta.przedtren" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                                Posiłek potreningowy:
+                                <textarea class="form-control" data-ng-model="nowaDieta.potren" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                                Kolacja
+                                <textarea class="form-control" data-ng-model="nowaDieta.kolacja" rows="2"></textarea>
+                                <div class="spacer10"></div>
+                            </div>
+                            <button data-ng-click="dodajDiete()">Dodaj nową diete</button>
                         </form>
                     </div>
                     <div data-ng-show="pokazPanelTreningow">
@@ -143,42 +173,73 @@
                             </div>
                         </div>
 
-                        <h1 data-ng-show="treningi">Treningi</h1>
+                        <div data-ng-show="treningi">
+                            <h1>Treningi</h1>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nazwa</th>
+                                        <th>Poniedzialek</th>
+                                        <th>Wtorek</th>
+                                        <th>Sroda</th>
+                                        <th>Czwartek</th>
+                                        <th>Piatek</th>
+                                        <th>Sobota</th>
+                                        <th>Niedziela</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="trening in treningi track by $index">
+                                        <td>{{trening.nazwa}}</td>
+                                        <td>{{trening.poniedzialek}}</td>
+                                        <td>{{trening.wtorek}}</td>
+                                        <td>{{trening.sroda}}</td>
+                                        <td>{{trening.czwartek}}</td>
+                                        <td>{{trening.piatek}}</td>
+                                        <td>{{trening.sobota}}</td>
+                                        <td>{{trening.niedziela}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <form ng-show='czyPatrzeNaSwojProfil()'>
+                                <select data-ng-model="selectedTrening" data-ng-options="trening.nazwa for trening in treningi"></select>
+                                <button data-ng-click="usunTrening()" class="btn btn-xs btn-default">Usuń trening</button>
+                                <div class="spacer30"></div>
+                            </form>
+                        </div>
+                        <div data-ng-show="diety">
+                            <h1>Diety</h1>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nazwa</th>
+                                        <th>Śniadanie</th>
+                                        <th>Lunch</th>
+                                        <th>Obiad</th>
+                                        <th>Przedtreningowe</th>
+                                        <th>Potreningowe</th>
+                                        <th>Kolacja</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="dieta in diety track by $index">
+                                        <td>{{dieta.nazwa}}</td>
+                                        <td>{{dieta.sniadanie}}</td>
+                                        <td>{{dieta.lunch}}</td>
+                                        <td>{{dieta.obiad}}</td>
+                                        <td>{{dieta.przedtren}}</td>
+                                        <td>{{dieta.potren}}</td>
+                                        <td>{{dieta.kolacja}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <form ng-show='czyPatrzeNaSwojProfil()'>
+                                <select data-ng-model="selectedDieta" data-ng-options="dieta.nazwa for dieta in diety"></select>
+                                <button data-ng-click="usunDiete()" class="btn btn-xs btn-default">Usuń diete</button>
+                                <div class="spacer30"></div>
+                            </form>
 
-                        <table data-ng-show="treningi" class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Nazwa</th>
-                                    <th>Poniedzialek</th>
-                                    <th>Wtorek</th>
-                                    <th>Sroda</th>
-                                    <th>Czwartek</th>
-                                    <th>Piatek</th>
-                                    <th>Sobota</th>
-                                    <th>Niedziela</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="trening in treningi track by $index">
-                                    <td>{{trening.nazwa}}</td>
-                                    <td>{{trening.poniedzialek}}</td>
-                                    <td>{{trening.wtorek}}</td>
-                                    <td>{{trening.sroda}}</td>
-                                    <td>{{trening.czwartek}}</td>
-                                    <td>{{trening.piatek}}</td>
-                                    <td>{{trening.sobota}}</td>
-                                    <td>{{trening.niedziela}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <form ng-show='czyPatrzeNaSwojProfil()'>
-                            <select data-ng-model="selectedTrening" data-ng-options="trening.nazwa for trening in treningi"></select>
-                            <button data-ng-click="usunTrening()" class="btn btn-xs btn-default">Usuń trening</button>
-
-                            <div class="spacer30"></div>
-                        </form>
-
+                        </div>
                     </div>
                 </div>
 

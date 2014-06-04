@@ -112,7 +112,7 @@ app.post('/signup',
                 console.log(reply.toString());
             });
 
-            res.redirect('/login.html');
+            res.redirect('/login.html?b=1');
         } else {
             res.redirect('/signup.html');
         }
@@ -219,7 +219,7 @@ app.post('/edit', function(req, res) {
 
 app.post('/login',
     passport.authenticate('local', {
-        failureRedirect: '/login.html'
+        failureRedirect: '/login.html?b=-1'
     }),
     function(req, res) {
         //sprawdzanie czy istnieje dla usera dane na temat jego profilu , jesli nie to przekieruj na panel dodawania informacji
@@ -415,6 +415,16 @@ sio.sockets.on('connection', function(socket) {
             socket.emit('zwrotTreningow', lista, user);
 
         });
+        client.lrange(user.username + 'diety', 0, -1, function(err, items) {
+            if (err) throw err;
+            var lista = [];
+            for (var i = 0; i < items.length; i++) {
+                var parsedItem = JSON.parse(items[i]);
+                lista.push(parsedItem);
+            }
+            socket.emit('zwrotDiet', lista, user);
+
+        });
     });
 
     socket.on('zapytanieOLubiane', function(user) {
@@ -432,12 +442,26 @@ sio.sockets.on('connection', function(socket) {
         console.log("dodalem trening do " + user + " o zawartosci " + jsontrening);
     });
 
+    socket.on('dodajDiete', function(dieta, user) {
+        var jsondieta = JSON.stringify(dieta);
+        client.rpush(user + 'diety', jsondieta);
+        console.log("dodalem diete do " + user + " o zawartosci " + jsondieta);
+    });
+
     socket.on('usunTrening', function(trening, user) {
         var jsontrening = JSON.stringify(trening);
         client.lrem(user + 'treningi', 0, jsontrening, function(err, reply) {
             console.log(reply.toString);
         });
     });
+
+    socket.on('usunDiete', function(dieta, user) {
+        var jsondieta = JSON.stringify(dieta);
+        client.lrem(user + 'diety', 0, jsondieta, function(err, reply) {
+            console.log(reply.toString);
+        });
+    });
+
     /////////////////////////////
     /////////////////////////////
 
