@@ -51,12 +51,10 @@
                         <br />
                         {{userData.miasto}}
                         <br />
-                        <img src="/uploads/{{userData.username}}.jpg" class="img-polaroid" width="100">
-                    </div>
+                        <img src="/uploads/{{userData.username}}.jpg" class="img-polaroid" width="100"></div>
                     <div class="spacer30"></div>
                     <div class="jumbotron">
                         <button class="btn btn-sm btn-default" data-ng-click="wyswietlPanelDodaniaTreningu()">Dodaj nowy trening</button>
-                        <div class="spacer30"></div>
                         <button class="btn btn-sm btn-default" data-ng-click="usunProfil()">Usuń konto</button>
                     </div>
                 </div>
@@ -116,7 +114,9 @@
                                     jest z nami od {{podgladanyProfil.dataUtw}}
                                     <br/>
                                     <br/>
-                                    <div ng-if="popularnoscUserow[podgladanyProfil.username] > 1">lubi go {{popularnoscUserow[podgladanyProfil.username]}}  ludzi </div>
+                                    <div ng-if="popularnoscUserow[podgladanyProfil.username] >
+                                        1">lubi go {{popularnoscUserow[podgladanyProfil.username]}}  ludzi
+                                    </div>
                                     <div ng-if="popularnoscUserow[podgladanyProfil.username] === 1">lubi go 1 osoba</div>
                                     <div ng-if="popularnoscUserow[podgladanyProfil.username] === 0">nikt go jeszcze nie lubi</div>
 
@@ -171,6 +171,14 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <form ng-show='czyPatrzeNaSwojProfil()'>
+                            <select data-ng-model="selectedTrening" data-ng-options="trening.nazwa for trening in treningi"></select>
+                            <button data-ng-click="usunTrening()" class="btn btn-xs btn-default">Usuń trening</button>
+
+                            <div class="spacer30"></div>
+                        </form>
+
                     </div>
                 </div>
 

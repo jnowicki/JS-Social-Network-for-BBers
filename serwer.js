@@ -431,6 +431,13 @@ sio.sockets.on('connection', function(socket) {
         client.rpush(user + 'treningi', jsontrening);
         console.log("dodalem trening do " + user + " o zawartosci " + jsontrening);
     });
+
+    socket.on('usunTrening', function(trening, user) {
+        var jsontrening = JSON.stringify(trening);
+        client.lrem(user + 'treningi', 0, jsontrening, function(err, reply) {
+            console.log(reply.toString);
+        });
+    });
     /////////////////////////////
     /////////////////////////////
 

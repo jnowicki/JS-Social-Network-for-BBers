@@ -48,7 +48,13 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             socket.emit('zapytanieOTreningi', user);
         }
 
-
+        $scope.usunTrening = function() {
+            socket.emit('usunTrening', $scope.selectedTrening, $scope.user);
+            $scope.selectedTrening = {};
+            var index = $scope.treningi.indexOf(selectedTrening);
+            $scope.treningi.splice(index, 1);
+            $scope.$digest();
+        };
 
         $scope.wyswietlStatus = function(user) {
             var zalogowany = false;
