@@ -18,6 +18,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
 
         $scope.pokazPanelDodaniaTreningu = false;
         $scope.pokazPanelTreningow = false;
+        $scope.pokazPanelEdycjiProfilu = false;
         $scope.podgladanyProfil = {};
         $scope.lubianeProfile = [];
         $scope.lubianePodgladanego = "";
@@ -35,11 +36,19 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             $scope.pokazPanelTreningow = false;
             $scope.pokazPanelDodaniaDiety = false;
             $scope.pokazPanelDodaniaTreningu = true;
+            $scope.pokazPanelEdycjiProfilu = false;
 
         }
 
         $scope.wyswietlPanelDodaniaDiety = function() {
             $scope.pokazPanelDodaniaDiety = true;
+            $scope.pokazPanelTreningow = false;
+            $scope.pokazPanelDodaniaTreningu = false;
+            $scope.pokazPanelEdycjiProfilu = false;
+        }
+        $scope.wyswietlPanelEdycjiProfilu = function() {
+            $scope.pokazPanelEdycjiProfilu = true;
+            $scope.pokazPanelDodaniaDiety = false;
             $scope.pokazPanelTreningow = false;
             $scope.pokazPanelDodaniaTreningu = false;
         }
@@ -54,6 +63,14 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             socket.emit('dodajDiete', $scope.nowaDieta, $scope.user);
             $scope.nowaDieta = {};
             $scope.pokazPanelDodaniaDiety = false;
+        }
+        $scope.edytujProfil = function() {
+            $scope.newData.dataUtw = $scope.userData.dataUtw;
+            $scope.newData.username = $scope.userData.username;
+            socket.emit('edytujProfil', $scope.newData, $scope.user);
+            $scope.userData = $scope.newData;
+            $scope.newData = {};
+            $scope.pokazPanelEdycjiProfilu = false;
         }
         ////////// dostan ten trneing na ktory spojrzysz
         $scope.getTrening = function(user) {
@@ -76,6 +93,9 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             $scope.selectedDieta = {};
         }
 
+
+
+
         $scope.wyswietlStatus = function(user) {
             var zalogowany = false;
             for (var i = 0; i < $scope.zalogowaniUserzy.length; i++) {
@@ -94,6 +114,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             socket.disconnect();
             window.location = '/login.html';
         }
+
 
         $scope.wyloguj = function() {
             socket.disconnect();
@@ -190,6 +211,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             $scope.pokazPanelTreningow = true;
             $scope.pokazPanelDodaniaTreningu = false;
             $scope.pokazPanelDodaniaDiety = false;
+            $scope.pokazPanelEdycjiProfilu = false;
 
             $scope.$digest();
         });

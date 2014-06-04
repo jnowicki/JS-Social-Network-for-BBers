@@ -81,7 +81,6 @@ app.use(express.session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('public'));
-app.use('/profiles/', require('./module-profile'));
 
 app.get('/', function(req, res) {
     if (req.user) {
@@ -446,6 +445,12 @@ sio.sockets.on('connection', function(socket) {
         var jsondieta = JSON.stringify(dieta);
         client.rpush(user + 'diety', jsondieta);
         console.log("dodalem diete do " + user + " o zawartosci " + jsondieta);
+    });
+
+    socket.on('edytujProfil', function(data, user) {
+        var jsondata = JSON.stringify(data);
+        client.set(user + 'data', jsondata);
+        console.log("zmieniłem dla " + user + " data na " + jsondata);
     });
 
     socket.on('usunTrening', function(trening, user) {
