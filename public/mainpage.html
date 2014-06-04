@@ -51,13 +51,7 @@
                         <br />
                         {{userData.miasto}}
                         <br />
-                        {{userData.waga}}kg
-                        <br />
-                        BF: {{userData.tluszcz}}%
-                        <br />
-                        Biceps: {{userData.bicek}}cm
-                        <br />
-                        Wzrost: {{userData.wzrost}}cm
+                        <img src="/uploads/{{userData.username}}.jpg" class="img-polaroid" width="100">
                     </div>
                     <div class="spacer30"></div>
                     <div class="jumbotron">
@@ -102,43 +96,52 @@
                         </form>
                     </div>
                     <div data-ng-show="pokazPanelTreningow">
-                    <div class="container">
-                        <div class="row">
-                            <h2><strong>{{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}</strong><br/>{{podgladanyProfil.miasto}}</h2>
-                            <br/>                           
-                            <br/>
-                            
-                            <div class="col-md-4">
-                                Wzrost:
-                                <br/>
-                                Waga:
-                                <br/>
-                                Obwód bicepsa:
+                        <div class="container">
+                            <div class="row">
+                                <h2> <strong>{{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}</strong>
+                                    <br/>
+                                    {{podgladanyProfil.miasto}}
+                                </h2>
                                 <br/>
                                 <br/>
-                                jest z nami od {{podgladanyProfil.dataUtw}}
-                                <br/>
-                                <br/>
-                                <a data-ng-show="czyProfilNieJestWLubianych()" data-ng-click="lubieTo()">Polub profil</a>
-                                <a data-ng-show="!czyProfilNieJestWLubianych()" data-ng-click="nieLubieTo()"> Cofnij propsy </a>
-                                <div ng-show="lubianePodgladanego">lubi {{lubianePodgladanego}}</div>
 
-                            </div>
-                            <div class="col-md-4">
-                                {{podgladanyProfil.wzrost}}cm
-                                <br/>
-                                {{podgladanyProfil.waga}}kg
-                                <br/>
-                                {{podgladanyProfil.bicek}}cm
-                                <br/>
-                            </div>
-                            <div class="col-md-4">
-                                <div ng-style="{color: wzrostKolor}">{{userData.wzrost - podgladanyProfil.wzrost}}cm</div>
-                                <div ng-style="{color: wagaKolor}">{{userData.waga - podgladanyProfil.waga}}kg</div>
-                                <div ng-style="{color: bicekKolor}">{{userData.bicek - podgladanyProfil.bicek}}cm</div>
+                                <div class="col-md-4">
+                                    Wzrost:
+                                    <br/>
+                                    Waga:
+                                    <br/>
+                                    Obwód bicepsa:
+                                    <br/>
+                                    <br/>
+                                    jest z nami od {{podgladanyProfil.dataUtw}}
+                                    <br/>
+                                    <br/>
+                                    <div ng-if="popularnoscUserow[podgladanyProfil.username] > 1">lubi go {{popularnoscUserow[podgladanyProfil.username]}}  ludzi </div>
+                                    <div ng-if="popularnoscUserow[podgladanyProfil.username] === 1">lubi go 1 osoba</div>
+                                    <div ng-if="popularnoscUserow[podgladanyProfil.username] === 0">nikt go jeszcze nie lubi</div>
+
+                                    <div data-ng-show="!czyPatrzeNaSwojProfil()">
+                                        <a data-ng-show="czyProfilNieJestWLubianych()" data-ng-click="lubieTo()">Polub profil</a>
+                                        <a data-ng-show="!czyProfilNieJestWLubianych()" data-ng-click="nieLubieTo()">Cofnij propsy</a>
+                                    </div>
+                                    <div ng-show="lubianePodgladanego">lubi {{lubianePodgladanego}}</div>
+
+                                </div>
+                                <div class="col-md-4" >
+                                    {{podgladanyProfil.wzrost}}cm
+                                    <br/>
+                                    {{podgladanyProfil.waga}}kg
+                                    <br/>
+                                    {{podgladanyProfil.bicek}}cm
+                                    <br/>
+                                </div>
+                                <div class="col-md-4" data-ng-show="!czyPatrzeNaSwojProfil()">
+                                    <div ng-style="{color: wzrostKolor}">{{userData.wzrost - podgladanyProfil.wzrost}}cm</div>
+                                    <div ng-style="{color: wagaKolor}">{{userData.waga - podgladanyProfil.waga}}kg</div>
+                                    <div ng-style="{color: bicekKolor}">{{userData.bicek - podgladanyProfil.bicek}}cm</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                         <h1 data-ng-show="treningi">Treningi</h1>
 
@@ -178,6 +181,7 @@
                         <div class="jumbotron">
                             <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
                             </li>
+                            <li>{{profile.miasto}}</li>
                             <li>{{wyswietlStatus(profile.username)}}</li>
                             <li>
                                 <img src="/uploads/{{profile.username}}.jpg" class="img-polaroid" width="100"></li>

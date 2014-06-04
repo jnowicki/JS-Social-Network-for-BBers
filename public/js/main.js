@@ -20,6 +20,7 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
         $scope.podgladanyProfil = {};
         $scope.lubianeProfile = [];
         $scope.lubianePodgladanego = "";
+        $scope.popularnoscUserow = {};
 
         ////kolorowanie różnic miedzy podgladanym profilem a userem zalogowanym
         $scope.wzrostKolor = "gray";
@@ -106,6 +107,13 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             }
         }
 
+        $scope.czyPatrzeNaSwojProfil = function() {
+            if ($scope.podgladanyProfil.username === $scope.user) {
+                return true;
+            }
+            return false;
+        }
+
         socket.on('uaktualnijLubiane', function(lubiane) {
             $scope.lubianeProfile = lubiane;
             $scope.$digest();
@@ -120,6 +128,12 @@ app.controller('serwisCtrlr', ['$scope', 'socket',
             $scope.lubianePodgladanego = lubianeStr.substring(0, lubianeStr.length - 2);
             $scope.$digest();
         })
+
+        socket.on('popularnosc', function(fejm) {
+            $scope.popularnoscUserow = fejm;
+            console.log("przyjalem słega: " + $scope.popularnoscUserow['kuba']);
+            $scope.$digest();
+        });
         ////////// kiedy dostaniesz z servera zwrot treningow to go dodaj
         socket.on('zwrotTreningow', function(treningi, user) {
             $scope.podgladanyProfil = user;

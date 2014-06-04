@@ -19,6 +19,8 @@ var redis = require("redis"),
 var fs = require('fs');
 
 var userzy = []; // lista aktualnie zalogowanych userow
+var popularnoscUserow = {};
+var wszyscyUserzyWRedisie = [];
 var profiles = [];
 
 // Konfiguracja passport.js
@@ -278,12 +280,55 @@ var getProfiles = function(socket) {
     });
 }
 
+
+var getAllLubiane = function() {
+    popularnoscUserow = {};
+    wszyscyUserzyWRedisie.forEach(function(user) {
+        popularnoscUserow[user] = 0; // konieczna inicjalizacja
+    });
+    for (var i = 0; i < wszyscyUserzyWRedisie.length; i++) {
+        console.log("teraz sprawdzam lubianych przez" + wszyscyUserzyWRedisie[i]);
+        client.lrange(wszyscyUserzyWRedisie[i] + 'lubiane', 0, -1, function(err, items) {
+            if (err) throw err;
+            items.forEach(function(item) {
+                console.log(wszyscyUserzyWRedisie[i] + 'zwieksza popularnosc ' + item);
+                popularnoscUserow[item]++;
+                console.log(item + " ma teraz " + popularnoscUserow[item] + "punkty popularnosci");
+            });
+
+            //////// uwaga niestabilna funckja, moze wywolywac sie o duzo razy za duzo przy duzych ilosiach lajkow ; )
+            sio.sockets.emit('popularnosc', popularnoscUserow);
+
+
+        });
+    }
+
+};
+
+var getAllUserzy = function() {
+    wszyscyUserzyWRedisie = [];
+    client.lrange('profiles', 0, -1, function(err, items) {
+        if (err) throw err;
+        //var profiles = [];
+        items.forEach(function(item) {
+            console.log(" mam cie " + item)
+            wszyscyUserzyWRedisie.push(item);
+        });
+        getAllLubiane();
+    });
+};
+
+getAllUserzy();
+
 var getLubiane = function(socket, user) {
     client.lrange(user + 'lubiane', 0, -1, function(err, items) {
         if (err) throw err;
         socket.emit("uaktualnijLubiane", items)
     })
 }
+
+
+
 
 sio.set('authorization', passportSocketIo.authorize({
     passport: passport,
@@ -311,6 +356,7 @@ sio.sockets.on('connection', function(socket) {
     if (userzy[myId]) {
         socket.emit('username', userzy[myId]); // dodatkowo wykona emit ask for data w main.js
         sio.sockets.emit('zalogowaniUserzy', userzy);
+        socket.emit('popularnosc', popularnoscUserow);
         console.log("wyslalem emita o userach");
     } else {
         socket.emit('oknoLogowania'); // przekieruj na okno logowania jak odswiezasz strone
@@ -393,11 +439,13 @@ sio.sockets.on('connection', function(socket) {
         client.rpush(user + 'lubiane', profil.username, function(err, reply) {
 
         });
+        getAllUserzy();
     });
 
     socket.on('odlubProfil', function(profil, user) {
         console.log("dostaje request o skasowanie z " + user + "lubiane, profil: " + profil.username);
         client.lrem(user + 'lubiane', 0, profil.username);
+        getAllUserzy();
     })
 });
 
