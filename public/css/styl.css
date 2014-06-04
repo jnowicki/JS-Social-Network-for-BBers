@@ -118,3 +118,8 @@ body {
 #zlyLogin{
   display:none !important;
 }
+
+.niebieski{
+  background-color:#66cccc;
+  font-weight: bold;
+}

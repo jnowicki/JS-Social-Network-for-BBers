@@ -9,7 +9,7 @@
     <script src="js/main.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styl.css"></head>
+    <link rel="stylesheet" href="css/styl.css">
     <link rel="stylesheet" href="css/spacer.css"></head>
 
 <body data-ng-app="serwis">
@@ -28,15 +28,12 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="/usunProfil">Usuń konto</a>
-                        </li>
-                        <li>
                             <a>Zalogowany jako {{user}}</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="/logout">Wyloguj</a>
+                        <a data-ng-click="wyloguj()"> Wyloguj</a>
                         </li>
                         <li>
                             <a href="/createNew">Stwórz nowe konto</a>
@@ -50,7 +47,7 @@
             <div class="row">
                 <!-- lewa kolumna -->
                 <div class="col-md-2 boczne">
-                    <div class='jumbotron' data-ng-click="getTrening(userData.username)"> <b>{{userData.imie}} {{userData.nazwisko}}</b>
+                    <div class='jumbotron' data-ng-click="getTrening(userData)"> <b>{{userData.imie}} {{userData.nazwisko}}</b>
                         <br />
                         {{userData.miasto}}
                         <br />
@@ -65,6 +62,8 @@
                     <div class="spacer30"></div>
                     <div class="jumbotron">
                         <button class="btn btn-sm btn-default" data-ng-click="wyswietlPanelDodaniaTreningu()">Dodaj nowy trening</button>
+                        <div class="spacer30"></div>
+                        <button class="btn btn-sm btn-default" data-ng-click="usunProfil()">Usuń konto</button>
                     </div>
                 </div>
 
@@ -104,10 +103,43 @@
                     </div>
                     <div data-ng-show="pokazPanelTreningow">
 
-                        <h2> Profil </h2>
-                        
+                        <h2>Profil</h2>
+                        <div class="col-md-6">
+                            <div class="jumbotron niebieski">
+                                {{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}
+                                <br/>
+                                {{podgladanyProfil.miasto}}
+                                <br/>
+                                <div class="spacer10"></div>
+                                {{podgladanyProfil.wzrost}}cm
+                                <br/>
+                                {{podgladanyProfil.waga}}kg
+                                <br/>
+                                obwód bicepsa {{podgladanyProfil.bicek}}cm
+                                <br/>
+                                <div class="spacer10"></div>
+                                jest z nami od {{podgladanyProfil.dataUtw}}
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="jumbotron niebieski">
+                                {{podgladanyProfil.imie}} {{podgladanyProfil.nazwisko}}
+                                <br/>
+                                {{podgladanyProfil.wzrost}}
+                                <br/>
+                                {{podgladanyProfil.waga}}
+                                <br/>
+                                {{podgladanyProfil.dataUtw}}
+                                <br/>
+                                {{podgladanyProfil.bicek}}
+                                <br/>
+                            </div>
+                        </div>
 
-                        <h2> Treningi </h2>
+                        <div class="spacer50"></div>
+                        <h2>Treningi</h2>
+
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -122,16 +154,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    <tr ng-repeat="trening in treningi track by $index">
-                                        <td>{{trening.nazwa}}</td>
-                                        <td>{{trening.poniedzialek}}</td>
-                                        <td>{{trening.wtorek}}</td>
-                                        <td>{{trening.sroda}}</td>
-                                        <td>{{trening.czwartek}}</td>
-                                        <td>{{trening.piatek}}</td>
-                                        <td>{{trening.sobota}}</td>
-                                        <td>{{trening.niedziela}}</td>                                        
-                                    </tr>
+                                <tr ng-repeat="trening in treningi track by $index">
+                                    <td>{{trening.nazwa}}</td>
+                                    <td>{{trening.poniedzialek}}</td>
+                                    <td>{{trening.wtorek}}</td>
+                                    <td>{{trening.sroda}}</td>
+                                    <td>{{trening.czwartek}}</td>
+                                    <td>{{trening.piatek}}</td>
+                                    <td>{{trening.sobota}}</td>
+                                    <td>{{trening.niedziela}}</td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -140,20 +172,28 @@
                 <!-- prawa kolumna -->
                 <div class="col-md-2 boczne zeScrollem col-md-offset-10">
 
-                    <ul class='nav nav-sidebar' ng-click="getTrening(profile.username)" ng-repeat="profile in profiles track by $index" id="{{profile.username}}">
+                    <ul class='nav nav-sidebar' ng-click="getTrening(profile)" ng-repeat="profile in profiles track by $index" id="{{profile.username}}">
                         <div class="jumbotron">
                             <li> <b>{{profile.imie}} {{profile.nazwisko}}</b>
                             </li>
+                            <li>
+
+                            {{wyswietlStatus(profile.username)}}
+                            </li>
+                            <li>
+                                <img src="/img/indeks.png" class="img-polaroid"></li>
+                            <!--
                             <li>{{profile.miasto}}</li>
-                            <li>{{profile.waga}}kg</li>
-                            <li>BF: {{profile.tluszcz}}%</li>
-                            <li>Biceps: {{profile.bicek}}cm</li>
-                            <li>Wzrost: {{profile.wzrost}}cm</li>
-                        </div>
-                    </ul>
-                </div>
+                        <li>{{profile.waga}}kg</li>
+                        <li>BF: {{profile.tluszcz}}%</li>
+                        <li>Biceps: {{profile.bicek}}cm</li>
+                        <li>Wzrost: {{profile.wzrost}}cm</li>
+                        -->
+                    </div>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

@@ -270,6 +270,8 @@ sio.sockets.on('connection', function(socket) {
     //// rozeslij userom ich username
     if (userzy[myId]) {
         socket.emit('username', userzy[myId]); // dodatkowo wykona emit ask for data w main.js
+        sio.sockets.emit('zalogowaniUserzy', userzy);
+        console.log("wyslalem emita o userach");
     } else {
         socket.emit('oknoLogowania'); // przekieruj na okno logowania jak odswiezasz strone
     }
@@ -287,7 +289,7 @@ sio.sockets.on('connection', function(socket) {
         });
         if (listaUserow.length > 21) console.log(listaUserow);
         /////
-
+        sio.sockets.emit('zalogowaniUserzy', userzy);
         socket.emit('oknoLogowania');
     });
 
@@ -296,7 +298,7 @@ sio.sockets.on('connection', function(socket) {
         client.del(user);
         client.del(user + 'data');
         client.decr('userCount');
-        client.lrem('profiles', user, 1);
+        client.lrem('profiles', 0, user);
         socket.disconnect();
     })
 
@@ -316,8 +318,8 @@ sio.sockets.on('connection', function(socket) {
 
     /////// Kiedy dostaniesz od klienta zapytanie o treningi, to wyslij mu te treningi z edisa
     socket.on('zapytanieOTreningi', function(user) {
-        console.log("ask for treningi for " + user + "treningi");
-        client.lrange(user + 'treningi', 0, -1, function(err, items) {
+        console.log("ask for treningi for " + user.username + "treningi");
+        client.lrange(user.username + 'treningi', 0, -1, function(err, items) {
             if (err) throw err;
             var lista = [];
             for (var i = 0; i < items.length; i++) {
